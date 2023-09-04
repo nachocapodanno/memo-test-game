@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const CREATE_GAME_SESSION = gql`
-  mutation CreateGameSession($memoTestId: ID!) {
+  mutation createGameSession($memoTestId: ID!) {
     createGameSession(memoTestId: $memoTestId) {
       id
       memoTestId

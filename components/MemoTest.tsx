@@ -23,6 +23,8 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
     updateGameSessionById,
     saveGameSessionLocal,
     getGameSessionByMemoTestId,
+    deleteGameSessionLocalById,
+    endGameSessionById,
   } = useGameSessions();
 
   const [cards, setCards] = useState<Card[]>(() => {
@@ -41,9 +43,6 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
       setCards(shuffledCards);
     }
   }, [cards.length, data]);
-
-  const showEndGameModal =
-    cards.length > 0 && cards.every((card) => card.matched);
 
   const handleCardClick = async (cardsIndex: number) => {
     // Do nothing if the card has already been selected or more than 2 cards are selected
@@ -77,12 +76,22 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
     }
   };
 
+  const isGameCompleted =
+    cards.length > 0 && cards.every((card) => card.matched);
+
   useEffect(() => {
     saveGameSessionLocal({
       memoTestId: Number(memoTestId),
       gameSessionId,
       cards,
     });
+  }, [cards]);
+
+  useEffect(() => {
+    if (isGameCompleted) {
+      deleteGameSessionLocalById(gameSessionId);
+      endGameSessionById(gameSessionId);
+    }
   }, [cards]);
 
   if (loading) {
@@ -117,7 +126,7 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
           </div>
         ))}
       </div>
-      {showEndGameModal && <WinnerModal gameSessionId={gameSessionId} />}
+      {isGameCompleted && <WinnerModal gameSessionId={gameSessionId} />}
     </>
   );
 };

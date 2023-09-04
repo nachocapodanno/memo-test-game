@@ -9,8 +9,12 @@ import { GET_ALL_MEMO_TESTS } from '@/graphql/queries/getAllMemoTests';
 function MemoTestsList() {
   const { loading, error, data } = useQuery(GET_ALL_MEMO_TESTS, { client });
 
-  const { createGameSession, getGameSessionByMemoTestId, gameSessions } =
-    useGameSessions();
+  const {
+    createGameSession,
+    getGameSessionByMemoTestId,
+    saveGameSessionLocal,
+    gameSessions,
+  } = useGameSessions();
   const router = useRouter();
 
   if (loading) {
@@ -32,6 +36,11 @@ function MemoTestsList() {
   const handleStartSession = async (memoTestId: string) => {
     try {
       const { id } = await createGameSession(Number(memoTestId));
+      saveGameSessionLocal({
+        gameSessionId: id,
+        memoTestId: Number(memoTestId),
+        cards: [],
+      });
       router.push(`/memo/${memoTestId}?sessionId=${id}`);
     } catch (error: any) {
       console.error('Error during game session creation:', error.message);

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { client } from '../lib/apollo/apollo-client';
 import { UPDATE_GAME_SESSION_RETRIES } from '@/graphql/mutations/updateGameSessionRetries';
 import { CREATE_GAME_SESSION } from '@/graphql/mutations/createGameSession';
+import { END_GAME_SESSION } from '@/graphql/mutations/endGameSession';
 
 
 
@@ -18,6 +19,9 @@ function useGameSessions() {
   const [updateGameSessionRetries] = useMutation(UPDATE_GAME_SESSION_RETRIES, {
     client,
   });
+  const [endGameSession] = useMutation(END_GAME_SESSION, {
+    client,
+  });
 
   const saveGameSessionLocal = (newGameSession: GameSession) => {
     setGameSessions((prevSessions) => {
@@ -28,6 +32,14 @@ function useGameSessions() {
       return [...filteredSessions, newGameSession];
     });
   };
+
+  const deleteGameSessionLocalById = (gameSessionId: number) => {
+    setGameSessions((prevSessions) => {
+      return prevSessions.filter(
+        (prev) => prev.gameSessionId !== gameSessionId
+      );
+    });
+  }
 
   const createGameSession = async (memoTestId: number) => {
     try {
@@ -50,6 +62,16 @@ function useGameSessions() {
     }
   };
 
+  const endGameSessionById = async (gameSessionId: number) => {
+    try {
+      await endGameSession({
+        variables: { id: gameSessionId },
+      });
+    } catch (error: any) {
+      console.error('Error during game session end:', error.message);
+    }
+  }
+
   const getGameSessionByMemoTestId = (memoTestId: number) => {
     return gameSessions.find((session) => session.memoTestId === memoTestId);
   };
@@ -62,9 +84,10 @@ function useGameSessions() {
     gameSessions,
     saveGameSessionLocal,
     getGameSessionByMemoTestId,
-    // updateGameSessionLocal,
+    deleteGameSessionLocalById,
     updateGameSessionById,
     createGameSession,
+    endGameSessionById,
   };
 }
 
