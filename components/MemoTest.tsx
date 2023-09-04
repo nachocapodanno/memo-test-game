@@ -1,70 +1,89 @@
 'use client';
 
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { client } from '../lib/apollo/apollo-client';
-import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
+import useGameSessions from '@/hooks/useGameSession';
+import { shuffleArray } from '@/utils/common';
+import { GET_MEMO_TEST } from '@/graphql/queries/getMemoTest';
+import { WinnerModal } from './WinnerModal';
 
-const GET_MEMO_TEST = gql`
-  query memoTest($id: ID!) {
-    memoTest(id: $id) {
-      name
-      images
-    }
-  }
-`;
-export const MemoTest = ({ id }: { id: number }) => {
+export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
+  const searchParams = useSearchParams();
+  const gameSessionId = Number(searchParams.get('sessionId'));
 
   const { loading, error, data } = useQuery(GET_MEMO_TEST, {
-    variables: { id },
+    variables: { id: memoTestId },
     client,
   });
 
-  const [cards, setCards] = useState<string[]>([]);
-  const [pairedCards, setPairedCards] = useState<string[]>([]);
+  const {
+    updateGameSessionById,
+    saveGameSessionLocal,
+    getGameSessionByMemoTestId,
+  } = useGameSessions();
+
+  const [cards, setCards] = useState<Card[]>(() => {
+    const gameSession = getGameSessionByMemoTestId(Number(memoTestId));
+    return gameSession ? gameSession.cards : [];
+  });
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
 
   useEffect(() => {
-    if (data && data.memoTest) {
+    if (data && data.memoTest && cards.length === 0) {
       const memoTestImages = data.memoTest.images;
-      const cardPairs = [...memoTestImages, ...memoTestImages];
+      const cardPairs = [...memoTestImages, ...memoTestImages].map(
+        (image, cardsIndex) => ({ id: cardsIndex + 1, image, matched: false })
+      );
       const shuffledCards = shuffleArray(cardPairs);
       setCards(shuffledCards);
     }
-  }, [data]);
+  }, [cards.length, data]);
 
-  const shuffleArray = (array: any) => {
-    return array.sort(() => Math.random() - 0.5);
-  };
+  const showEndGameModal =
+    cards.length > 0 && cards.every((card) => card.matched);
 
-  const handleCardClick = (index: number) => {
-    // Do not do anything:
-    // 1- The card has already been selected
-    // 2- There are more than 2 cards selected
-    // 3- The card has already been turned
-    if (
-      selectedCards.length === 2 ||
-      selectedCards.includes(index) ||
-      pairedCards.includes(cards[index])
-    ) {
+  const handleCardClick = async (cardsIndex: number) => {
+    // Do nothing if the card has already been selected or more than 2 cards are selected
+    if (selectedCards.length === 2 || selectedCards.includes(cardsIndex)) {
       return;
     }
 
-    setSelectedCards([...selectedCards, index]);
+    setSelectedCards([...selectedCards, cardsIndex]);
 
-    // if there are no cards yet, ends
-    if (selectedCards.length === 0) return;
+    if (selectedCards.length === 1) {
+      await updateGameSessionById(gameSessionId);
 
-    // Check if there are 2 cards are a pair
-    const [firstCardIndex] = selectedCards;
-    if (cards[firstCardIndex] === cards[index])
-      setPairedCards([...pairedCards, cards[firstCardIndex]]);
+      const [firstCardIndex] = selectedCards;
 
-    setTimeout(() => {
-      setSelectedCards([]);
-    }, 1000);
+      // Check if there are 2 cards are a pair
+      if (cards[firstCardIndex].image === cards[cardsIndex].image) {
+        setCards((prev) => {
+          return prev.map((card, indexState) => {
+            if ([firstCardIndex, cardsIndex].includes(indexState)) {
+              return { ...card, matched: true };
+            }
+            return card;
+          });
+        });
+      }
+
+      // Resetting selected cards
+      setTimeout(() => {
+        setSelectedCards([]);
+      }, 1000);
+    }
   };
+
+  useEffect(() => {
+    saveGameSessionLocal({
+      memoTestId: Number(memoTestId),
+      gameSessionId,
+      cards,
+    });
+  }, [cards]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -78,26 +97,27 @@ export const MemoTest = ({ id }: { id: number }) => {
     <>
       <p className='text-4xl font-bold'>MemoTest Game</p>
       <div className='grid grid-cols-4 gap-4'>
-        {cards.map((card, index) => (
+        {cards.map(({ id, image, matched }, cardsIndex) => (
           <div
-            key={index}
-            className={`p-4 border rounded-lg cursor-pointer w-48 h-48 ${
-              selectedCards.includes(index) ? '' : ''
-            }`}
-            onClick={() => handleCardClick(index)}
+            key={id}
+            className={`p-4 border rounded-lg cursor-pointer w-48 h-48 items-center justify-center flex`}
+            onClick={() => handleCardClick(cardsIndex)}
           >
-            {(selectedCards.includes(index) || pairedCards.includes(card)) && (
+            {selectedCards.includes(cardsIndex) || matched ? (
               <Image
-                src={card}
-                alt={`Card ${index}`}
+                src={image}
+                alt={`Card ${id}`}
                 width={50}
                 height={50}
                 className='w-48 h-48 rounded-lg object-contain'
               />
+            ) : (
+              <p className='text-2xl'>{id}</p>
             )}
           </div>
         ))}
       </div>
+      {showEndGameModal && <WinnerModal gameSessionId={gameSessionId} />}
     </>
   );
 };

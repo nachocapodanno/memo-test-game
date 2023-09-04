@@ -1,39 +1,16 @@
 'use client';
 
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { client } from '../lib/apollo/apollo-client';
 import { useRouter } from 'next/navigation';
 import useGameSessions from '@/hooks/useGameSession';
-
-const LIST_MEMO_TESTS = gql`
-  query memoTests {
-    memoTests {
-      data {
-        id
-        name
-        images
-      }
-    }
-  }
-`;
-
-const CREATE_GAME_SESSION = gql`
-  mutation CreateGameSession($memoTestId: ID!) {
-    createGameSession(memoTestId: $memoTestId) {
-      id
-      memoTestId
-      state
-      retries
-      numberOfPairs
-    }
-  }
-`;
+import { GET_ALL_MEMO_TESTS } from '@/graphql/queries/getAllMemoTests';
 
 function MemoTestsList() {
-  const { loading, error, data } = useQuery(LIST_MEMO_TESTS, { client });
-  const [createGameSession] = useMutation(CREATE_GAME_SESSION, { client });
+  const { loading, error, data } = useQuery(GET_ALL_MEMO_TESTS, { client });
 
-  const { addGameSession, gameSessions } = useGameSessions();
+  const { createGameSession, getGameSessionByMemoTestId, gameSessions } =
+    useGameSessions();
   const router = useRouter();
 
   if (loading) {
@@ -54,18 +31,19 @@ function MemoTestsList() {
 
   const handleStartSession = async (memoTestId: string) => {
     try {
-      const { data } = await createGameSession({
-        variables: { memoTestId },
-      });
-
-      //   console.log('Sesión de juego creada:', data.createGameSession);
-
-      const { __typename, ...rest } = data.createGameSession;
-      addGameSession(rest);
-      router.push(`/memo/${memoTestId}`);
+      const { id } = await createGameSession(Number(memoTestId));
+      router.push(`/memo/${memoTestId}?sessionId=${id}`);
     } catch (error: any) {
       console.error('Error during game session creation:', error.message);
     }
+  };
+
+  const handleContinueSession = async (memoTestId: string) => {
+    const gameSession = getGameSessionByMemoTestId(Number(memoTestId));
+    if (!gameSession) {
+      return;
+    }
+    router.push(`/memo/${memoTestId}?sessionId=${gameSession.gameSessionId}`);
   };
 
   return (
@@ -84,8 +62,11 @@ function MemoTestsList() {
               >
                 Start
               </button>
-              {showContinueButton(memoTest.id) && (
-                <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded'>
+              {showContinueButton(Number(memoTest.id)) && (
+                <button
+                  onClick={() => handleContinueSession(memoTest.id)}
+                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded'
+                >
                   Continue
                 </button>
               )}
