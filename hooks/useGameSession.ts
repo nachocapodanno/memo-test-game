@@ -5,12 +5,13 @@ import { UPDATE_GAME_SESSION_RETRIES } from '@/graphql/mutations/updateGameSessi
 import { CREATE_GAME_SESSION } from '@/graphql/mutations/createGameSession';
 import { END_GAME_SESSION } from '@/graphql/mutations/endGameSession';
 
-
-
 function useGameSessions() {
   const [gameSessions, setGameSessions] = useState<GameSession[]>(() => {
-    const gameSessions = localStorage.getItem('gameSessions');
-    return gameSessions ? JSON.parse(gameSessions) : [];
+    if (typeof window !== 'undefined') {
+      const gameSessions = localStorage.getItem('gameSessions');
+      return gameSessions ? JSON.parse(gameSessions) : [];
+    }
+    return [];
   });
 
   const [createGameSessionMutation] = useMutation(CREATE_GAME_SESSION, {
@@ -39,7 +40,7 @@ function useGameSessions() {
         (prev) => prev.gameSessionId !== gameSessionId
       );
     });
-  }
+  };
 
   const createGameSession = async (memoTestId: number) => {
     try {
@@ -70,13 +71,18 @@ function useGameSessions() {
     } catch (error: any) {
       console.error('Error during game session end:', error.message);
     }
-  }
+  };
 
   const getGameSessionByMemoTestId = (memoTestId: number) => {
+    // console.log('pidiendo sesion...')
+    // const sessions = JSON.parse(localStorage.getItem('gameSessions') || '[]');
+    // console.log('las sessions', sessions)
+    // return sessions.find((session: GameSession) => session.memoTestId === memoTestId);
     return gameSessions.find((session) => session.memoTestId === memoTestId);
   };
 
   useEffect(() => {
+    console.log('guardando...', gameSessions);
     localStorage.setItem('gameSessions', JSON.stringify(gameSessions));
   }, [gameSessions]);
 

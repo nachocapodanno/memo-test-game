@@ -6,18 +6,27 @@ import { getGameScore } from '@/utils/common';
 type GameSessionScore = {
   memoTestId: number;
   gameSessionId: number;
-  score: number
-}
+  score: number;
+};
 
 function useGameSessionsScores() {
   const [gameSessions, setGameSessions] = useState<GameSessionScore[]>(() => {
-    const gameSessions = localStorage.getItem('gameScores');
-    return gameSessions ? JSON.parse(gameSessions) : [];
+    if (typeof window !== 'undefined') {
+      const gameSessions = localStorage.getItem('gameScores');
+      return gameSessions ? JSON.parse(gameSessions) : [];
+    }
+    return [];
   });
 
-  const saveGameSessionHighestScore = async ({ memoTestId, gameSessionId }: { memoTestId: number, gameSessionId: number }) => {
+  const saveGameSessionHighestScore = async ({
+    memoTestId,
+    gameSessionId,
+  }: {
+    memoTestId: number;
+    gameSessionId: number;
+  }) => {
     const newScore = await getGameSessionScore(gameSessionId);
-    const currentScore = getGameSessionsHighestScore(memoTestId)
+    const currentScore = getGameSessionsHighestScore(memoTestId);
 
     if (newScore > currentScore) {
       setGameSessions((prevSessions) => {
@@ -25,24 +34,31 @@ function useGameSessionsScores() {
         const filteredSessions = prevSessions.filter(
           (prev) => prev.memoTestId !== memoTestId
         );
-        return [...filteredSessions, { memoTestId, gameSessionId, score: newScore }];
+        return [
+          ...filteredSessions,
+          { memoTestId, gameSessionId, score: newScore },
+        ];
       });
     }
   };
 
   const getGameSessionsHighestScore = (memoTestId: string | number) => {
-    return gameSessions.find((session) => Number(session.memoTestId) === Number(memoTestId))?.score || 0;
+    return (
+      gameSessions.find(
+        (session) => Number(session.memoTestId) === Number(memoTestId)
+      )?.score || 0
+    );
   };
 
   const getGameSessionScore = async (gameSessionId: number) => {
     const { data } = await client.query({
       query: GET_GAME_SESSION_BY_ID,
-      variables: { id: gameSessionId }
+      variables: { id: gameSessionId },
     });
 
     const { retries = 0, numberOfPairs = 0 } = data.gameSession;
     return getGameScore(numberOfPairs, retries);
-  }
+  };
 
   useEffect(() => {
     localStorage.setItem('gameScores', JSON.stringify(gameSessions));
