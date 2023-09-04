@@ -17,7 +17,7 @@ function MemoTestsList() {
     gameSessions,
   } = useGameSessions();
   const { getGameSessionsHighestScore } = useGameSessionsScores();
-  
+
   const router = useRouter();
 
   if (loading) {
@@ -32,7 +32,8 @@ function MemoTestsList() {
 
   const showContinueButton = (memoTestId: number) => {
     return gameSessions.some(
-      (gameSession) => gameSession.memoTestId === memoTestId
+      (gameSession) =>
+        gameSession.memoTestId === memoTestId && gameSession.cards.length > 0
     );
   };
 
@@ -67,7 +68,9 @@ function MemoTestsList() {
             className='flex justify-between items-center gap-8 p-4'
           >
             <p className='text-2xl'>{memoTest.name}</p>
-            <p className='text-2xl bold'>{getGameSessionsHighestScore(memoTest.id)}</p>
+            <p className='text-2xl bold'>
+              {getGameSessionsHighestScore(memoTest.id)}
+            </p>
             <div className='flex gap-4 flex-end p-2'>
               <button
                 onClick={() => handleStartSession(memoTest.id)}
