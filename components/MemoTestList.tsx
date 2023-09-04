@@ -59,37 +59,50 @@ function MemoTestsList() {
     router.push(`/memo/${memoTestId}?sessionId=${gameSession.gameSessionId}`);
   };
 
+  const getHighestScoreValue = (memoTestId: string) => {
+    const score = getGameSessionsHighestScore(memoTestId);
+    return score > 0 ? score : '-';
+  };
+
   return (
-    <div>
-      <ul>
-        {memoTests.map((memoTest: any) => (
-          <div
-            key={memoTest.id}
-            className='flex justify-between items-center gap-8 p-4'
-          >
-            <p className='text-2xl'>{memoTest.name}</p>
-            <p className='text-2xl bold'>
-              {getGameSessionsHighestScore(memoTest.id)}
-            </p>
-            <div className='flex gap-4 flex-end p-2'>
+    <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-2 mt-12'>
+      {memoTests.map((memoTest: any) => (
+        <div
+          key={memoTest.id}
+          className='card w-96 bg-primary text-primary-content'
+        >
+          <div className='card-body'>
+            <h2 className='card-title subpixel-antialiased text-2xl'>{memoTest.name}</h2>
+            <div className='stat p-0'>
+              <div className='flex items-center gap-2'>
+                <p className='stat-title antialiased text-slate-300 grow-0'>
+                  Highest Score
+                </p>
+                <span className='text-xl'>🏆</span>
+              </div>
+              <div className='stat-value'>
+                {getHighestScoreValue(memoTest.id)}
+              </div>
+            </div>
+            <div className='card-actions justify-end mt-4'>
               <button
                 onClick={() => handleStartSession(memoTest.id)}
-                className='btn btn-primary'
+                className='btn btn-success'
               >
                 Start
               </button>
               {showContinueButton(Number(memoTest.id)) && (
                 <button
                   onClick={() => handleContinueSession(memoTest.id)}
-                  className='btn btn-primary'
+                  className='btn btn-success'
                 >
                   Continue
                 </button>
               )}
             </div>
           </div>
-        ))}
-      </ul>
+        </div>
+      ))}
     </div>
   );
 }

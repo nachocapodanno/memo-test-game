@@ -16,7 +16,7 @@ import { Card } from './Card/Card';
 
 export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   const searchParams = useSearchParams();
-  const router = useRouter()
+  const router = useRouter();
   const gameSessionId = Number(searchParams.get('sessionId'));
 
   const { loading, error, data } = useQuery(GET_MEMO_TEST, {
@@ -134,7 +134,10 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   return (
     <>
       <div>
-        <button className='btn btn-square absolute top-5 right-5 m-4' onClick={handleBackHome}>
+        <button
+          className='btn btn-square absolute top-5 right-5 m-4'
+          onClick={handleBackHome}
+        >
           <svg
             xmlns='http://www.w3.org/2000/svg'
             className='h-6 w-6'
