@@ -1,5 +1,6 @@
 'use client';
 
+import confetti from 'canvas-confetti';
 import { useQuery } from '@apollo/client';
 import { client } from '../lib/apollo/apollo-client';
 import { useSearchParams } from 'next/navigation';
@@ -86,12 +87,12 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   const getGameSessionScore = async () => {
     const { data } = await client.query({
       query: GET_GAME_SESSION_BY_ID,
-      variables: { id: gameSessionId }
+      variables: { id: gameSessionId },
     });
 
     const { retries = 0, numberOfPairs = 0 } = data.gameSession;
     return getGameScore(numberOfPairs, retries);
-  }
+  };
 
   useEffect(() => {
     saveGameSessionLocal({
@@ -108,6 +109,10 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
       saveGameSessionHighestScore({
         gameSessionId,
         memoTestId: Number(memoTestId),
+      });
+      confetti({
+        spread: 160,
+        particleCount: 500,
       });
     }
   }, [cards]);
