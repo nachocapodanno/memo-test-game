@@ -4,6 +4,7 @@ import { GET_GAME_SESSION_BY_ID } from '@/graphql/queries/getGameSessionById';
 import { client } from '../lib/apollo/apollo-client';
 import { useQuery } from '@apollo/client';
 import Link from 'next/link';
+import { getGameScore } from '@/utils/common';
 
 export function WinnerModal({ gameSessionId }: { gameSessionId: number }) {
   const { loading, error, data } = useQuery(GET_GAME_SESSION_BY_ID, {
@@ -20,7 +21,8 @@ export function WinnerModal({ gameSessionId }: { gameSessionId: number }) {
   }
 
   const { retries = 0, numberOfPairs = 0 } = data.gameSession;
-  const score = Math.round((numberOfPairs / retries) * 100);
+  const score = getGameScore(numberOfPairs, retries);
+  
   return (
     <div
       className='fixed z-10 inset-0 overflow-y-auto'

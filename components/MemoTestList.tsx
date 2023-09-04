@@ -5,6 +5,7 @@ import { client } from '../lib/apollo/apollo-client';
 import { useRouter } from 'next/navigation';
 import useGameSessions from '@/hooks/useGameSession';
 import { GET_ALL_MEMO_TESTS } from '@/graphql/queries/getAllMemoTests';
+import useGameSessionsScores from '@/hooks/useGameSessionScores';
 
 function MemoTestsList() {
   const { loading, error, data } = useQuery(GET_ALL_MEMO_TESTS, { client });
@@ -15,6 +16,8 @@ function MemoTestsList() {
     saveGameSessionLocal,
     gameSessions,
   } = useGameSessions();
+  const { getGameSessionsHighestScore } = useGameSessionsScores();
+  
   const router = useRouter();
 
   if (loading) {
@@ -64,6 +67,7 @@ function MemoTestsList() {
             className='flex justify-between items-center gap-8 p-4'
           >
             <p className='text-2xl'>{memoTest.name}</p>
+            <p className='text-2xl bold'>{getGameSessionsHighestScore(memoTest.id)}</p>
             <div className='flex gap-4 flex-end p-2'>
               <button
                 onClick={() => handleStartSession(memoTest.id)}

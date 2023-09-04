@@ -6,9 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import useGameSessions from '@/hooks/useGameSession';
-import { shuffleArray } from '@/utils/common';
+import { getGameScore, shuffleArray } from '@/utils/common';
 import { GET_MEMO_TEST } from '@/graphql/queries/getMemoTest';
 import { WinnerModal } from './WinnerModal';
+import useGameSessionsScores from '@/hooks/useGameSessionScores';
+import { GET_GAME_SESSION_BY_ID } from '@/graphql/queries/getGameSessionById';
 
 export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   const searchParams = useSearchParams();
@@ -26,6 +28,8 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
     deleteGameSessionLocalById,
     endGameSessionById,
   } = useGameSessions();
+
+  const { saveGameSessionHighestScore } = useGameSessionsScores();
 
   const [cards, setCards] = useState<Card[]>(() => {
     const gameSession = getGameSessionByMemoTestId(Number(memoTestId));
@@ -79,6 +83,16 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   const isGameCompleted =
     cards.length > 0 && cards.every((card) => card.matched);
 
+  const getGameSessionScore = async () => {
+    const { data } = await client.query({
+      query: GET_GAME_SESSION_BY_ID,
+      variables: { id: gameSessionId }
+    });
+
+    const { retries = 0, numberOfPairs = 0 } = data.gameSession;
+    return getGameScore(numberOfPairs, retries);
+  }
+
   useEffect(() => {
     saveGameSessionLocal({
       memoTestId: Number(memoTestId),
@@ -91,6 +105,10 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
     if (isGameCompleted) {
       deleteGameSessionLocalById(gameSessionId);
       endGameSessionById(gameSessionId);
+      saveGameSessionHighestScore({
+        gameSessionId,
+        memoTestId: Number(memoTestId),
+      });
     }
   }, [cards]);
 
