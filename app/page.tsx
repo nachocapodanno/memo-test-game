@@ -6,7 +6,6 @@ export default function Home() {
   return (
     <main className='flex min-h-screen flex-col items-center justify-center p-24 gap-16'>
       <h1 className='text-5xl font-bold'>Memo Test Game</h1>
-      {/* <Image src="/vercel.svg" alt="Vercel Logo" width={96} height={96} /> */}
       <div className='flex flex-wrap gap-4'>
         <MemoTestsList />
       </div>

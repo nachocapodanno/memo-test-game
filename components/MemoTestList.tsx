@@ -21,7 +21,7 @@ function MemoTestsList() {
   const router = useRouter();
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <span className='loading loading-spinner text-secondary'></span>;
   }
 
   if (error) {
@@ -74,14 +74,14 @@ function MemoTestsList() {
             <div className='flex gap-4 flex-end p-2'>
               <button
                 onClick={() => handleStartSession(memoTest.id)}
-                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded'
+                className='btn btn-primary'
               >
                 Start
               </button>
               {showContinueButton(Number(memoTest.id)) && (
                 <button
                   onClick={() => handleContinueSession(memoTest.id)}
-                  className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-2 rounded'
+                  className='btn btn-primary'
                 >
                   Continue
                 </button>

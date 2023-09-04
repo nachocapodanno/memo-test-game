@@ -3,7 +3,7 @@
 import confetti from 'canvas-confetti';
 import { useQuery } from '@apollo/client';
 import { client } from '../lib/apollo/apollo-client';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import useGameSessions from '@/hooks/useGameSession';
@@ -12,9 +12,11 @@ import { GET_MEMO_TEST } from '@/graphql/queries/getMemoTest';
 import { WinnerModal } from './WinnerModal';
 import useGameSessionsScores from '@/hooks/useGameSessionScores';
 import { GET_GAME_SESSION_BY_ID } from '@/graphql/queries/getGameSessionById';
+import { Card } from './Card/Card';
 
 export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   const searchParams = useSearchParams();
+  const router = useRouter()
   const gameSessionId = Number(searchParams.get('sessionId'));
 
   const { loading, error, data } = useQuery(GET_MEMO_TEST, {
@@ -117,8 +119,12 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
     }
   }, [cards]);
 
+  const handleBackHome = () => {
+    router.push('/');
+  };
+
   if (loading) {
-    return <div>Loading...</div>;
+    return <span className='loading loading-spinner text-secondary'></span>;
   }
 
   if (error) {
@@ -127,26 +133,35 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
 
   return (
     <>
-      <p className='text-4xl font-bold'>MemoTest Game</p>
-      <div className='grid grid-cols-4 gap-4'>
-        {cards.map(({ id, image, matched }, cardsIndex) => (
-          <div
-            key={id}
-            className={`p-4 border rounded-lg cursor-pointer w-48 h-48 items-center justify-center flex`}
-            onClick={() => handleCardClick(cardsIndex)}
+      <div>
+        <button className='btn btn-square absolute top-5 right-5 m-4' onClick={handleBackHome}>
+          <svg
+            xmlns='http://www.w3.org/2000/svg'
+            className='h-6 w-6'
+            fill='none'
+            viewBox='0 0 24 24'
+            stroke='currentColor'
           >
-            {selectedCards.includes(cardsIndex) || matched ? (
-              <Image
-                src={image}
-                alt={`Card ${id}`}
-                width={50}
-                height={50}
-                className='w-48 h-48 rounded-lg object-contain'
-              />
-            ) : (
-              <p className='text-2xl'>{id}</p>
-            )}
-          </div>
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth='2'
+              d='M6 18L18 6M6 6l12 12'
+            />
+          </svg>
+        </button>
+
+        <p className='text-4xl font-bold'>{data.memoTest.name}</p>
+      </div>
+      <div className='grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 '>
+        {cards.map(({ id, image, matched }, cardsIndex) => (
+          <Card
+            imageUrl={image}
+            number={id}
+            onClick={() => handleCardClick(cardsIndex)}
+            isFlipped={selectedCards.includes(cardsIndex) || matched}
+            key={id}
+          />
         ))}
       </div>
       {isGameCompleted && <WinnerModal gameSessionId={gameSessionId} />}

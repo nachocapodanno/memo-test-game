@@ -74,15 +74,10 @@ function useGameSessions() {
   };
 
   const getGameSessionByMemoTestId = (memoTestId: number) => {
-    // console.log('pidiendo sesion...')
-    // const sessions = JSON.parse(localStorage.getItem('gameSessions') || '[]');
-    // console.log('las sessions', sessions)
-    // return sessions.find((session: GameSession) => session.memoTestId === memoTestId);
     return gameSessions.find((session) => session.memoTestId === memoTestId);
   };
 
   useEffect(() => {
-    console.log('guardando...', gameSessions);
     localStorage.setItem('gameSessions', JSON.stringify(gameSessions));
   }, [gameSessions]);
 

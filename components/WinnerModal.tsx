@@ -26,12 +26,9 @@ export function WinnerModal({ gameSessionId }: { gameSessionId: number }) {
   return (
     <div
       className='fixed z-10 inset-0 overflow-y-auto'
-      id='error-modal'
-      aria-labelledby='modal-title'
       role='dialog'
-      aria-modal='true'
     >
-      <div className='flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0'>
+      <div className='flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0'>
         <div
           className='fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity'
           aria-hidden='true'
@@ -42,27 +39,28 @@ export function WinnerModal({ gameSessionId }: { gameSessionId: number }) {
         >
           &#8203;
         </span>
-        <div className='inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6'>
-          <div className='sm:flex sm:items-start'>
-            <div className='mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left'>
-              <h3
-                className='text-lg leading-6 font-medium text-gray-900'
+        <div className='inline-block align-bottom bg-neutral rounded-lg px-4 pt-5 pb-4 overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6'>
+          <div className='flex justify-center items-center'>
+            <div className='text-center mt-2'>
+              <h1
+                className='text-lg leading-8 text-3xl'
                 id='modal-title'
               >
                 Congratulations! 🎉
-              </h3>
-              <div className='mt-2'>
-                <p className='text-sm text-gray-500'>Your score is {score}</p>
+              </h1>
+              <div className='mt-6'>
+                <p className='text-medium'>Your score is</p>
+                <p className='font-bold text-4xl mt-2'>{score}</p>
               </div>
             </div>
           </div>
-          <div className='mt-5 sm:mt-4 sm:flex sm:flex-row-reverse'>
+          <div className='mt-8'>
             <Link
               href='/'
               type='button'
-              className='w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm'
+              className='btn btn-primary btn-sm'
             >
-              Close
+              Back to home
             </Link>
           </div>
         </div>
