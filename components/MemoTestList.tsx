@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import useGameSessions from '@/hooks/useGameSession';
 import { GET_ALL_MEMO_TESTS } from '@/graphql/queries/getAllMemoTests';
 import useGameSessionsScores from '@/hooks/useGameSessionScores';
+import { GameState } from '@/constants/enums';
 
 function MemoTestsList() {
   const { loading, error, data } = useQuery(GET_ALL_MEMO_TESTS, { client });
@@ -40,12 +41,7 @@ function MemoTestsList() {
   const handleStartSession = async (memoTestId: string) => {
     try {
       const { id } = await createGameSession(Number(memoTestId));
-      saveGameSessionLocal({
-        gameSessionId: id,
-        memoTestId: Number(memoTestId),
-        cards: [],
-      });
-      router.push(`/memo/${memoTestId}?sessionId=${id}`);
+      router.push(`/memo/${memoTestId}?sessionId=${id}&state=${GameState.NEW}`);
     } catch (error: any) {
       console.error('Error during game session creation:', error.message);
     }
@@ -56,7 +52,7 @@ function MemoTestsList() {
     if (!gameSession) {
       return;
     }
-    router.push(`/memo/${memoTestId}?sessionId=${gameSession.gameSessionId}`);
+    router.push(`/memo/${memoTestId}?sessionId=${gameSession.gameSessionId}&state=${GameState.STARTED}`);
   };
 
   const getHighestScoreValue = (memoTestId: string) => {
@@ -65,7 +61,7 @@ function MemoTestsList() {
   };
 
   return (
-    <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-2 gap-2 mt-12'>
+    <div className='grid grid-cols-2 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-2 gap-4 mt-10'>
       {memoTests.map((memoTest: any) => (
         <div
           key={memoTest.id}

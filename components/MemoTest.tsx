@@ -5,7 +5,6 @@ import { useQuery } from '@apollo/client';
 import { client } from '../lib/apollo/apollo-client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import Image from 'next/image';
 import useGameSessions from '@/hooks/useGameSession';
 import { getGameScore, shuffleArray } from '@/utils/common';
 import { GET_MEMO_TEST } from '@/graphql/queries/getMemoTest';
@@ -13,11 +12,13 @@ import { WinnerModal } from './WinnerModal';
 import useGameSessionsScores from '@/hooks/useGameSessionScores';
 import { GET_GAME_SESSION_BY_ID } from '@/graphql/queries/getGameSessionById';
 import { Card } from './Card/Card';
+import { GameState } from '@/constants/enums';
 
 export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const gameSessionId = Number(searchParams.get('sessionId'));
+  const sessionState = searchParams.get('state');
 
   const { loading, error, data } = useQuery(GET_MEMO_TEST, {
     variables: { id: memoTestId },
@@ -36,7 +37,9 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
 
   const [cards, setCards] = useState<Card[]>(() => {
     const gameSession = getGameSessionByMemoTestId(Number(memoTestId));
-    return gameSession ? gameSession.cards : [];
+    return gameSession && sessionState === GameState.STARTED
+      ? gameSession.cards
+      : [];
   });
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
 
