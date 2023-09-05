@@ -1,34 +1,60 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+<h1 align="center" id="title">Memo Test Game</h1>
 
-## Getting Started
+<p align="center" id="description">A memo test game developed using NextJS, React and Tailwind CSS.</p>
 
-First, run the development server:
+<h2>📝 Requirements:</h2>
+<p>This game will be composed of a few pages:</p>
+<b>Home:</b>
+<p>Simple list of memo tests with a button ‘Start’ to start a new session for that memo test or ‘Continue’ to continue an already created and unfinished session stored in some front-end storage</p>
+<ul><li>The list of memo tests should display the highest score that was reached in some of the sessions for that game</li></ul>
+<b>Solve memo test (session):</b>
+<p>A page containing a list of images (2 copies per image) hidden with a number sorted in random order</p>
+<ul><li>In the beginning, you will see a covered card with a number. The user will be able to click on any card to uncover the image (it should have some animation) and will be able to uncover two at a time</li>
+<li>If they are the same image, they should remain uncovered for the rest of the session</li>
+<li>If they are different, they both should flip again to the black card with the number</li>
+<li>Each time a pair of cards is selected the retries in the session should be updated</li>
+</ul>
+<b>Score:</b>
+<p>Once all pairs have been uncovered the session should end and show a score calculated like this: score = (numberOfPairs / retries) * 100 and a button to return to the Home
+</p>
+
+<p><i>
+The information of an ongoing session or the highest scores per game should persist if there is a browser refresh.</i></p>
+
+<h2>🛠️ Installation Steps:</h2>
+
+<p>1. Install dependencies</p>
+
+```
+npm install
+```
+
+<p>2. Create an .env file in project root using .env.example</p>
+
+```
+cp .env.example .env
+```
+
+<p>3. Run server</p>
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<h2>📕 Storybook</h2>
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+<p>1. Run storybook</p>
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+```
+npm run storybook
+```
 
-## Learn More
+<p>2. Go to</p>
 
-To learn more about Next.js, take a look at the following resources:
+```
+http://localhost:6006/
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+<h2>💖Like my work?</h2>
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Feel free to reach me out - icapodanno@gmail.com
