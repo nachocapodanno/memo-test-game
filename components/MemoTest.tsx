@@ -3,7 +3,7 @@
 import { WinnerModal } from './WinnerModal/WinnerModal';
 import { Card } from './Card/Card';
 import { CloseButton } from './CloseButton/CloseButton';
-import { useMemoTest } from '@/hooks/useMemoTes';
+import { useMemoTest } from '@/hooks/useMemoTest';
 
 export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   const {
