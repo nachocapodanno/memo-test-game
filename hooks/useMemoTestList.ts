@@ -6,13 +6,22 @@ import { useRouter } from 'next/navigation';
 export const useMemoTestList = () => {
   const router = useRouter();
 
-  const { createGameSession, getGameSessionByMemoTestId, gameSessions } =
-    useGameSessions();
+  const {
+    createGameSession,
+    getGameSessionByMemoTestId,
+    gameSessions,
+    saveGameSessionLocal,
+  } = useGameSessions();
   const { getGameSessionsHighestScore } = useGameSessionsScores();
 
   const handleStartSession = async (memoTestId: string) => {
     try {
       const { id } = await createGameSession(Number(memoTestId));
+      saveGameSessionLocal({
+        memoTestId: Number(memoTestId),
+        gameSessionId: id,
+        cards: [],
+      });
       router.push(`/memo/${memoTestId}?sessionId=${id}&state=${GameState.NEW}`);
     } catch (error: any) {
       console.error('Error during game session creation:', error.message);

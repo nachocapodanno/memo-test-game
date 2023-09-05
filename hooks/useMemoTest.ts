@@ -32,9 +32,13 @@ export const useMemoTest = (memoTestId: number) => {
 
   const [cards, setCards] = useState<Card[]>(() => {
     const gameSession = getGameSessionByMemoTestId(Number(memoTestId));
-    return gameSession && sessionState === GameState.STARTED
-      ? gameSession.cards
-      : [];
+
+    if (!gameSession) return [];
+
+    if (GameState.NEW && gameSession.cards.length === 0) return [];
+
+    // Started sessions or New sessions with session data
+    return gameSession.cards;
   });
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
 
