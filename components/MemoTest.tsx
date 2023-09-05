@@ -8,11 +8,12 @@ import { useEffect, useState } from 'react';
 import useGameSessions from '@/hooks/useGameSession';
 import { getGameScore, shuffleArray } from '@/utils/common';
 import { GET_MEMO_TEST } from '@/graphql/queries/getMemoTest';
-import { WinnerModal } from './WinnerModal';
+import { WinnerModal } from './WinnerModal/WinnerModal';
 import useGameSessionsScores from '@/hooks/useGameSessionScores';
 import { GET_GAME_SESSION_BY_ID } from '@/graphql/queries/getGameSessionById';
 import { Card } from './Card/Card';
 import { GameState } from '@/constants/enums';
+import { CloseButton } from './CloseButton/CloseButton';
 
 export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   const searchParams = useSearchParams();
@@ -137,26 +138,7 @@ export const MemoTest = ({ memoTestId }: { memoTestId: number }) => {
   return (
     <>
       <div>
-        <button
-          className='btn btn-square absolute top-5 right-5 m-4'
-          onClick={handleBackHome}
-        >
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            className='h-6 w-6'
-            fill='none'
-            viewBox='0 0 24 24'
-            stroke='currentColor'
-          >
-            <path
-              strokeLinecap='round'
-              strokeLinejoin='round'
-              strokeWidth='2'
-              d='M6 18L18 6M6 6l12 12'
-            />
-          </svg>
-        </button>
-
+       <CloseButton onClick={handleBackHome} />
         <p className='text-4xl font-bold'>{data.memoTest.name}</p>
       </div>
       <div className='grid grid-cols-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 '>
