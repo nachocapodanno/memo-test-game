@@ -29,10 +29,10 @@ The information of an ongoing session or the highest scores per game should pers
 npm install
 ```
 
-<p>2. Create an .env file in project root using .env.example</p>
+<p>2. Create an .env.local file in project root using .env.example</p>
 
 ```
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 <p>3. Run server</p>

@@ -21,7 +21,7 @@ function MemoTestsList() {
   }
 
   if (error) {
-    return <p>Error: {error.message}</p>;
+    return <p>Error fetching memo tests</p>;
   }
 
   const memoTests = data.memoTests.data;
